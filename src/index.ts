@@ -1,7 +1,11 @@
 import { Elysia } from "elysia";
+import { connectDB } from "./db/dbConnect";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const app = new Elysia();
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+await connectDB();
+
+app.get("/", () => "Hello Vending Machine");
+
+app.listen(3000);
+console.log("Server is up and running");
