@@ -6,22 +6,11 @@ import {
   updateInstitution,
   deleteInstitution,
 } from "../controllers/institution";
-import { InstituteType} from "../types/vendingMachine";
+import { InstituteType } from "../types/vendingMachine";
 
-export const vendingRoutes = new Elysia()
-  .get("/institutions", async () => {
-    return await getAllInstitutions();
-  })
-  .get("/institution/:id", async ({ params }) => {
-    return await getInstitutionById(params.id);
-  })
-  .post("/institutions", async (context) => {
-    const body = context.body as InstituteType;
-    return await createInstitution(body);
-  })
-  .put("/institution/:id", async ({ params, body }) => {
-    return await updateInstitution(params.id, body);
-  })
-  .delete("/institution/:id", async ({ params }) => {
-    return await deleteInstitution(params.id);
-  });
+export const institutionRoutes = new Elysia({ prefix: "/institutes" })
+  .get("/", async () => await getAllInstitutions())
+  .get("/:id", async ({ params }) => await getInstitutionById(params.id))
+  .post("/", async ({ body }) => await createInstitution(body as InstituteType))
+  .patch("/:id", async ({ params, body }) => await updateInstitution(params.id, body))
+  .delete("/:id", async ({ params }) => await deleteInstitution(params.id));
