@@ -1,4 +1,5 @@
 import { VendingMachine } from "../models/vendingMachine";
+import { VendingMachineType } from "../types/vendingMachine";
 
 export const getAllMachines = async () => {
   return await VendingMachine.find();
@@ -8,7 +9,7 @@ export const getMachineById = async (id: string) => {
   return await VendingMachine.findById(id);
 };
 
-export const createMachine = async (data: any) => {
+export const createMachine = async (data: VendingMachineType) => {
   const machine = new VendingMachine(data);
   return await machine.save();
 };

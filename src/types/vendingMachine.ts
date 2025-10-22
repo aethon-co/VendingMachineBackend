@@ -6,7 +6,12 @@ export type FoodItemType = {
   
 export type VendingMachineType = {
     name: string;
-    institute: string;
     items: FoodItemType[];
 }
-  
+
+export type InstituteType = {
+    name: string,
+    mail: string,
+    password: string,
+    VendingMachines: [VendingMachineType]
+}

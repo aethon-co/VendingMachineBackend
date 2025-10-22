@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { FoodItemType, VendingMachineType } from "../types/vendingMachine";
 
 const FoodItemSchema = new Schema<FoodItemType>({
@@ -7,9 +7,8 @@ const FoodItemSchema = new Schema<FoodItemType>({
   quantity: { type: Number, required: true, default: 0 },
 });
 
-const VendingMachineSchema = new Schema<VendingMachineType>({
+export const VendingMachineSchema = new Schema<VendingMachineType>({
   name: { type: String, required: true },
-  institute: { type: String, required: true },
   items: { type: [FoodItemSchema], default: [] },
 });
 
