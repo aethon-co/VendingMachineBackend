@@ -9,7 +9,10 @@ const FoodItemSchema = new Schema<FoodItemType>({
 
 export const VendingMachineSchema = new Schema<VendingMachineType>({
   name: { type: String, required: true },
-  items: { type: [FoodItemSchema], default: [] },
+  row1: { type: FoodItemSchema, default: null },
+  row2: { type: FoodItemSchema, default: null },
+  row3: { type: FoodItemSchema, default: null },
+  row4: { type: FoodItemSchema, default: null },
 });
 
 export const VendingMachine = model<VendingMachineType>(

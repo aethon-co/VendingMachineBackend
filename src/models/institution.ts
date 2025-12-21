@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { VendingMachineSchema } from "./vendingMachine";
 import { InstituteType } from "../types/vendingMachine";
 
@@ -16,10 +16,11 @@ const InstituteSchema = new Schema<InstituteType>({
         required: true,
         minlength: 3
     },
-    VendingMachines:{
-        type: [VendingMachineSchema],
-        default: []
-    }
+    VendingMachines: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'VendingMachine',
+        default: [] 
+    }]
 })
 
 export const Institute = model<InstituteType>(

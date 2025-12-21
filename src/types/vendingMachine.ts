@@ -1,17 +1,21 @@
 export type FoodItemType = {
+    rowNumber:number;
     name: string;
     price: number;
     quantity: number;
-}
+} | null
   
 export type VendingMachineType = {
     name: string;
-    items: FoodItemType[];
+    row1: FoodItemType;
+    row2: FoodItemType;
+    row3: FoodItemType;
+    row4: FoodItemType;
 }
 
 export type InstituteType = {
-    name: string,
-    mail: string,
-    password: string,
+    name: string;
+    mail: string;
+    password: string;
     VendingMachines: [VendingMachineType]
 }
