@@ -11,11 +11,6 @@ export type VendingMachineType = {
     row2: FoodItemType;
     row3: FoodItemType;
     row4: FoodItemType;
+    institute_id: string;
 }
 
-export type InstituteType = {
-    name: string;
-    mail: string;
-    password: string;
-    VendingMachines: [VendingMachineType]
-}

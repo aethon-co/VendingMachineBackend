@@ -39,7 +39,8 @@ export const loginInstitution = async (data: Pick<InstituteType, "mail" | "passw
   }
   
   const token = await jwt.sign({
-    id: institute._id
+    id: institute._id,
+    mail: institute.mail
   });
 
   return {

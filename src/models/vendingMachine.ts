@@ -13,6 +13,10 @@ export const VendingMachineSchema = new Schema<VendingMachineType>({
   row2: { type: FoodItemSchema, default: null },
   row3: { type: FoodItemSchema, default: null },
   row4: { type: FoodItemSchema, default: null },
+  institute_id: {
+        type: Schema.Types.ObjectId,
+        required: true
+  } 
 });
 
 export const VendingMachine = model<VendingMachineType>(

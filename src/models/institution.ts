@@ -16,11 +16,9 @@ const InstituteSchema = new Schema<InstituteType>({
         required: true,
         minlength: 3
     },
-    VendingMachines: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'VendingMachine',
-        default: [] 
-    }]
+    refreshToken:{
+      type:String
+    }
 })
 
 export const Institute = model<InstituteType>(
