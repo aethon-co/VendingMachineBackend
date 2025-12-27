@@ -1,16 +1,35 @@
+import { Types } from "mongoose";
+
 export type FoodItemType = {
-    rowNumber:number;
+    rowNumber: number;
     name: string;
     price: number;
     quantity: number;
 } | null
-  
-export type VendingMachineType = {
+
+export type VendingMachineSchemaType = {
     name: string;
     row1: FoodItemType;
     row2: FoodItemType;
     row3: FoodItemType;
     row4: FoodItemType;
-    institute_id: string;
+    institute_id: Types.ObjectId;
+}
+
+export type VendingMachineUpdateDetailsType = {
+    name: string;
+    institute_id: Types.ObjectId;
+}
+
+export type VendingMachineUpdateStockType = {
+    row1: FoodItemType;
+    row2: FoodItemType;
+    row3: FoodItemType;
+    row4: FoodItemType;
+}
+
+export type VendingMachineCreationType = {
+    name: string;
+    institute_id: Types.ObjectId;
 }
 

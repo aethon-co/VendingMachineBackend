@@ -3,20 +3,14 @@ import { connectDB } from "./db/dbConnect";
 import 'dotenv/config';
 import { institutionRoutes } from "./routes/Institution";
 import { vendingRoutes } from "./routes/vendingMachine";
+import { jwtMiddleware } from "./middlewares/jwtInstitution";
 
 
 const app = new Elysia();
 
 await connectDB();
-import { jwt } from '@elysiajs/jwt'
 
-app.use(
-  jwt({
-    name: 'jwt',
-    secret: process.env.JWT_SECRET!,
-    exp: '15m'
-  })
-)
+app.use(jwtMiddleware)
 
 
 app.get("/", () => "Hello Vending Machine");
