@@ -1,11 +1,15 @@
 import { VendingMachine } from "../models/vendingMachine";
 import { VendingMachineCreationType, VendingMachineUpdateDetailsType, VendingMachineUpdateStockType } from "../types/vendingMachine";
-import { NotFoundError } from "../errors/handler";
+import { BadRequestError, NotFoundError } from "../errors/handler";
 
 
-export const createMachine = async (data: VendingMachineCreationType) => {
+export const createMachine = async (data: VendingMachineCreationType, jwt_vending_machine: any) => {
   const machine = new VendingMachine(data);
-  return await machine.save();
+  if (!machine) {
+    throw new BadRequestError("Invalid data");
+  } else {
+    return await machine.save();
+  }
 };
 
 export const authenticateMachine = async (id: string) => {
@@ -16,7 +20,7 @@ export const authenticateMachine = async (id: string) => {
   return machine;
 };
 
-export const updateMachine = async (id: string, data: VendingMachineUpdateDetailsType) => {
+export const updateMachine = async (id: string, data: Partial<VendingMachineUpdateDetailsType>) => {
   const machine = await VendingMachine.findByIdAndUpdate(id, data, { new: true });
   if (!machine) {
     throw new NotFoundError("Vending Machine not found");

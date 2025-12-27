@@ -29,16 +29,16 @@ export const createInstitution = async (data: InstituteRegisterType, jwt_institu
   };
 };
 
-export const updateInstitution = async (id: string, data: Partial<InstituteUpdateType>) => {
-  const updated = await Institute.findByIdAndUpdate(id, data, { new: true });
+export const updateInstitution = async (_id: string, data: Partial<InstituteUpdateType>) => {
+  const updated = await Institute.findByIdAndUpdate(_id, data, { new: true });
   if (!updated) {
     throw new NotFoundError("Institution not found");
   }
   return updated;
 };
 
-export const deleteInstitution = async (id: string) => {
-  const deleted = await Institute.findByIdAndDelete(id);
+export const deleteInstitution = async (_id: string) => {
+  const deleted = await Institute.findByIdAndDelete(_id);
   if (!deleted) {
     throw new NotFoundError("Institution not found");
   }
@@ -80,10 +80,18 @@ export const authenticateInstitution = async (_id: string) => {
   return institute;
 };
 
-export const updateMachineStock = async (id: string, data: VendingMachineUpdateStockType) => {
-  const machine = await VendingMachine.findByIdAndUpdate(id, data, { new: true });
+export const updateMachineStock = async (_id: string, data: Partial<VendingMachineUpdateStockType>) => {
+  const machine = await VendingMachine.findByIdAndUpdate(_id, data, { new: true });
   if (!machine) {
     throw new NotFoundError("Vending Machine not found");
   }
   return machine;
+};
+
+export const getVendingMachines = async (_id: string) => {
+  const machines = await VendingMachine.find({ institute_id: _id });
+  if (!machines) {
+    throw new NotFoundError("Vending Machines not found");
+  }
+  return machines;
 };

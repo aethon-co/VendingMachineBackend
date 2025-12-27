@@ -17,6 +17,7 @@ export const VendingMachineSchema = new Schema<VendingMachineSchemaType>({
     type: Schema.Types.ObjectId,
     required: true
   },
+  role: { type: String, default: "vending_machine" },
 
 });
 

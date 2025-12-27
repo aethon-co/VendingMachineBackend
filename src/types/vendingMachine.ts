@@ -14,6 +14,7 @@ export type VendingMachineSchemaType = {
     row3: FoodItemType;
     row4: FoodItemType;
     institute_id: Types.ObjectId;
+    role: string;
 }
 
 export type VendingMachineUpdateDetailsType = {
