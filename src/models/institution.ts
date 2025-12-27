@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import { InstituteSchemaType } from "../types/institution";
 
 const InstituteSchema = new Schema<InstituteSchemaType>({
@@ -23,6 +23,14 @@ const InstituteSchema = new Schema<InstituteSchemaType>({
     refreshToken: {
         type: String,
         required: false
+    },
+    createdAt: {
+        type: String,
+        default: Date.now().toString()
+    },
+    role: {
+        type: String,
+        default: "institution"
     }
 })
 

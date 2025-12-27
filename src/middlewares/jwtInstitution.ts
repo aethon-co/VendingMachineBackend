@@ -7,6 +7,7 @@ export const jwtMiddleware = jwt({
     exp: '15m',
     schema: t.Object({
         id: t.String(),
-        mail: t.String()
+        mail: t.String(),
+        role: t.String(),
     })
 })

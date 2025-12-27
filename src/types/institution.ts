@@ -4,6 +4,7 @@ export type InstituteSchemaType = {
     password: string;
     refreshToken?: string;
     createdAt: string;
+    role: string;
 }
 
 export type InstituteRegisterType = {

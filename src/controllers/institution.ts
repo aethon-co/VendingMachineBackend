@@ -1,15 +1,7 @@
 import { Institute } from "../models/institution";
 import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution";
 
-export const getAllInstitutions = async () => {
-  return await Institute.find();
-};
-
-export const getInstitutionById = async (_id: string) => {
-  return await Institute.findById(_id);
-};
-
-export const createInstitution = async (data: InstituteRegisterType, jwt: any) => {
+export const createInstitution = async (data: InstituteRegisterType, jwt_institution: any) => {
   const existing = await Institute.findOne({ mail: data.mail });
   if (existing) {
     throw new Error("Institution already exists");
@@ -18,9 +10,10 @@ export const createInstitution = async (data: InstituteRegisterType, jwt: any) =
   const newInstitution = new Institute({ ...data, password: hashedPassword });
   await newInstitution.save();
 
-  const token = await jwt.sign({
+  const token = await jwt_institution.sign({
     id: newInstitution._id,
-    mail: newInstitution.mail
+    mail: newInstitution.mail,
+    role: newInstitution.role
   });
 
   return {
@@ -42,7 +35,7 @@ export const deleteInstitution = async (id: string) => {
 };
 
 
-export const loginInstitution = async (data: InstituteLoginType, jwt: any) => {
+export const loginInstitution = async (data: InstituteLoginType, jwt_institution: any) => {
   const institute = await Institute.findOne({ mail: data.mail });
   if (!institute) {
     throw new Error("Invalid credentials");
@@ -52,9 +45,10 @@ export const loginInstitution = async (data: InstituteLoginType, jwt: any) => {
     throw new Error("Invalid credentials");
   }
 
-  const token = await jwt.sign({
+  const token = await jwt_institution.sign({
     id: institute._id,
-    mail: institute.mail
+    mail: institute.mail,
+    role: institute.role
   });
 
   return {
