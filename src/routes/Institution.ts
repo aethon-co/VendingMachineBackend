@@ -10,13 +10,19 @@ import {
   loginInstitution,
 } from "../controllers/institution";
 import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution";
+import { authGuard, verifyUser } from "../middlewares/auth";
 
 export const institutionRoutes = new Elysia({ prefix: "/institutes" })
   .use(jwtMiddleware)
   .get("/", async () => await getAllInstitutions())
   .post("/login", async ({ body, jwt_institution }) => await loginInstitution(body as InstituteLoginType, jwt_institution))
-  .get("/me", async ({ headers, jwt_institution }) => await authenticateInstitution(jwt_institution, headers.authorization))
   .get("/:id", async ({ params }: { params: { id: string } }) => await getInstitutionById(params.id))
   .post("/", async ({ body, jwt_institution }) => await createInstitution(body as InstituteRegisterType, jwt_institution))
-  .patch("/:id", async ({ params, body }) => await updateInstitution(params.id, body as Partial<InstituteUpdateType>))
-  .delete("/:id", async ({ params }: { params: { id: string } }) => await deleteInstitution(params.id));
+  .use(authGuard)
+  .guard({
+    beforeHandle: verifyUser
+  }, (app) => app
+    .get("/me", ({ user }) => authenticateInstitution(user.id))
+    .patch("/update", ({ body, user }) => updateInstitution(user.id, body as Partial<InstituteUpdateType>))
+    .delete("/delete", ({ user }) => deleteInstitution(user.id))
+  );

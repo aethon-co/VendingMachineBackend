@@ -5,8 +5,8 @@ export const getAllInstitutions = async () => {
   return await Institute.find();
 };
 
-export const getInstitutionById = async (id: string) => {
-  return await Institute.findById(id);
+export const getInstitutionById = async (_id: string) => {
+  return await Institute.findById(_id);
 };
 
 export const createInstitution = async (data: InstituteRegisterType, jwt: any) => {
@@ -67,20 +67,10 @@ export const loginInstitution = async (data: InstituteLoginType, jwt: any) => {
   };
 };
 
-export const authenticateInstitution = async (jwt: any, authHeader: string | undefined) => {
-  if (!authHeader) {
-    throw new Error("Unauthorized");
-  }
-  const token = authHeader.replace("Bearer ", "");
-  const payload = await jwt.verify(token);
-  if (!payload) {
-    throw new Error("Invalid token");
-  }
-
-  const institute = await getInstitutionById(payload.id);
+export const authenticateInstitution = async (_id: string) => {
+  const institute = await Institute.findById(_id);
   if (!institute) {
     throw new Error("User not found");
   }
-
   return institute;
 };
