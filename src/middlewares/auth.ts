@@ -10,7 +10,7 @@ export const auth = new Elysia({ name: 'auth' }).derive(
     const authHeader = headers.authorization
 
     if (!authHeader) {
-      set.status = 401
+      set.status = 402
       throw new Error('Unauthorized')
     }
 

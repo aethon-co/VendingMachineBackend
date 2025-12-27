@@ -4,19 +4,25 @@ import { InstituteSchemaType } from "../types/institution";
 const InstituteSchema = new Schema<InstituteSchemaType>({
     name: {
         type: String,
-        required: true
+        required: true,
+        minlength: 3
     },
     mail: {
         type: String,
-        required: true
+        required: true,
+        minlength: 3,
+        match: /^\S+@\S+\.\S+$/
     },
     password: {
         type: String,
         required: true,
         minlength: 3
     },
+
+    // Might implement in the future
     refreshToken: {
-        type: String
+        type: String,
+        required: false
     }
 })
 
