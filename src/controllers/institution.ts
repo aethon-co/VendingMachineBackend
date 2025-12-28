@@ -14,7 +14,7 @@ export const createInstitution = async (data: InstituteRegisterType, jwt_institu
   await newInstitution.save();
 
   const token = await jwt_institution.sign({
-    id: newInstitution._id,
+    id: newInstitution._id.toString(),
     mail: newInstitution.mail,
     role: newInstitution.role
   });
@@ -57,7 +57,7 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
   }
 
   const token = await jwt_institution.sign({
-    id: institute._id,
+    id: institute._id.toString(),
     mail: institute.mail,
     role: institute.role
   });
@@ -70,14 +70,6 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
       mail: institute.mail
     }
   };
-};
-
-export const authenticateInstitution = async (_id: string) => {
-  const institute = await Institute.findById(_id);
-  if (!institute) {
-    throw new NotFoundError("User not found");
-  }
-  return institute;
 };
 
 export const updateMachineStock = async (_id: string, data: Partial<VendingMachineUpdateStockType>) => {
@@ -94,4 +86,17 @@ export const getVendingMachines = async (_id: string) => {
     throw new NotFoundError("Vending Machines not found");
   }
   return machines;
+};
+
+export const authenticateInstitution = async (_id: string) => {
+  const institute = await Institute.findById(_id);
+  if (!institute) {
+    throw new NotFoundError("Institute not found");
+  }
+  const machines = await getVendingMachines(_id);
+
+  return {
+    institute,
+    machines
+  };
 };

@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { jwtMiddlewareInstitution } from "../middlewares/jwtInstitution";
+import { errorPlugin } from "../errors/handler";
 import {
   createInstitution,
   updateInstitution,
@@ -14,10 +15,11 @@ import { authGuard, verifyUser } from "../middlewares/auth";
 import { VendingMachineUpdateStockType } from "../types/vendingMachine";
 
 export const institutionRoutes = new Elysia({ prefix: "/institutes" })
+  .use(errorPlugin)
   .use(jwtMiddlewareInstitution)
   .post("/login", async ({ body, jwt_institution }) => await loginInstitution(body as InstituteLoginType, jwt_institution))
   .post("/", async ({ body, jwt_institution }) => await createInstitution(body as InstituteRegisterType, jwt_institution))
-  .use(authGuard)
+  .use(authGuard("institution"))
   .guard({
     beforeHandle: verifyUser
   }, (app) => app

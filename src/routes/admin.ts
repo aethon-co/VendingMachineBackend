@@ -1,15 +1,17 @@
 import Elysia from "elysia";
 import { jwtMiddlewareAdmin } from "../middlewares/jwtAdmin";
+import { errorPlugin } from "../errors/handler";
 import { authenticateAdmin, createAdmin, deleteAdmin, getAllInstitutions, getAllMachines, getInstitutionById, getMachineById, loginAdmin, updateAdmin } from "../controllers/admin";
 import { AdminLoginType, AdminRegisterType, AdminUpdateType } from "../types/admin";
 import { verifyUser } from "../middlewares/auth";
 import { authGuard } from "../middlewares/auth";
 
 export const adminRoutes = new Elysia({ prefix: "/admin" })
+    .use(errorPlugin)
     .use(jwtMiddlewareAdmin)
     .post("/", async ({ body, jwt_admin }) => await createAdmin(body as AdminRegisterType, jwt_admin))
     .post("/login", async ({ body, jwt_admin }) => await loginAdmin(body as AdminLoginType, jwt_admin))
-    .use(authGuard)
+    .use(authGuard("admin"))
     .guard({
         beforeHandle: verifyUser
     }, (app) => app

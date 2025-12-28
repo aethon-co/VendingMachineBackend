@@ -6,7 +6,7 @@ export const jwtMiddlewareInstitution = jwt({
     secret: process.env.JWT_INSTITUTION_SECRET!,
     exp: '15m',
     schema: t.Object({
-        _id: t.String(),
+        id: t.String(),
         mail: t.String(),
         role: t.String(),
     })

@@ -6,8 +6,8 @@ export const jwtMiddlewareAdmin = jwt({
     secret: process.env.JWT_ADMIN_SECRET!,
     exp: '15m',
     schema: t.Object({
-        _id: t.String(),
-        email: t.String(),
+        id: t.String(),
+        mail: t.String(),
         role: t.String(),
     })
 })

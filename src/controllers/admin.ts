@@ -21,7 +21,7 @@ export const getInstitutionById = async (_id: string) => {
 };
 
 export const createAdmin = async (data: AdminRegisterType, jwt_admin: any) => {
-    const existing = await Admin.findOne({ email: data.email });
+    const existing = await Admin.findOne({ mail: data.mail });
     if (existing) {
         throw new BadRequestError("Admin already exists");
     }
@@ -29,8 +29,8 @@ export const createAdmin = async (data: AdminRegisterType, jwt_admin: any) => {
     const admin = new Admin({ ...data, password: hashedPassword });
     await admin.save();
     const token = await jwt_admin.sign({
-        id: admin._id,
-        email: admin.email,
+        id: admin._id.toString(),
+        mail: admin.mail,
         role: admin.role
     });
     return {
@@ -38,7 +38,7 @@ export const createAdmin = async (data: AdminRegisterType, jwt_admin: any) => {
         user: {
             id: admin._id,
             name: admin.name,
-            email: admin.email
+            mail: admin.mail
         }
     };
 };
@@ -68,7 +68,7 @@ export const authenticateAdmin = async (_id: string) => {
 };
 
 export const loginAdmin = async (data: AdminLoginType, jwt_admin: any) => {
-    const admin = await Admin.findOne({ email: data.email });
+    const admin = await Admin.findOne({ mail: data.mail });
     if (!admin) {
         throw new UnauthorizedError("Invalid credentials");
     }
@@ -78,8 +78,8 @@ export const loginAdmin = async (data: AdminLoginType, jwt_admin: any) => {
     }
 
     const token = await jwt_admin.sign({
-        id: admin._id,
-        email: admin.email,
+        id: admin._id.toString(),
+        mail: admin.mail,
         role: admin.role
     });
 
@@ -88,7 +88,7 @@ export const loginAdmin = async (data: AdminLoginType, jwt_admin: any) => {
         user: {
             id: admin._id,
             name: admin.name,
-            email: admin.email
+            mail: admin.mail
         }
     };
 };

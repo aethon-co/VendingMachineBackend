@@ -6,7 +6,7 @@ const AdminSchema = new Schema({
         type: String,
         required: true
     },
-    email: {
+    mail: {
         type: String,
         required: true,
         unique: true

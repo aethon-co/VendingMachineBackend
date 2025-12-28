@@ -8,12 +8,14 @@ import {
 } from "../controllers/vending";
 import { VendingMachineCreationType, VendingMachineUpdateDetailsType, VendingMachineUpdateStockType } from "../types/vendingMachine";
 import { jwtMiddlewareVendingMachine } from "../middlewares/jwtVendingMachine";
+import { errorPlugin } from "../errors/handler";
 import { authGuard, verifyUser } from "../middlewares/auth";
 
 export const vendingRoutes = new Elysia({ prefix: "/machines" })
+  .use(errorPlugin)
   .use(jwtMiddlewareVendingMachine)
   .post("/", async ({ body, jwt_vending_machine }) => await createMachine(body as VendingMachineCreationType, jwt_vending_machine))
-  .use(authGuard)
+  .use(authGuard("vending"))
   .guard({
     beforeHandle: verifyUser
   }, (app) => app
