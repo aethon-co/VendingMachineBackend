@@ -63,12 +63,13 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
   });
 
   return {
-    token,
-    user: {
+    token:token,
+    institution: {
       id: institute._id,
       name: institute.name,
       mail: institute.mail
-    }
+    },
+    machines:[]
   };
 };
 
