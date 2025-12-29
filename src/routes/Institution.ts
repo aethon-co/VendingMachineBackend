@@ -14,7 +14,7 @@ import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "
 import { authGuard, verifyUser } from "../middlewares/auth";
 import { VendingMachineUpdateStockType } from "../types/vendingMachine";
 
-export const institutionRoutes = new Elysia({ prefix: "/institutes" })
+export const institutionRoutes = new Elysia({ prefix: "/institution" })
   .use(errorPlugin)
   .use(jwtMiddlewareInstitution)
   .post("/login", async ({ body, jwt_institution }) => await loginInstitution(body as InstituteLoginType, jwt_institution))
@@ -23,9 +23,9 @@ export const institutionRoutes = new Elysia({ prefix: "/institutes" })
   .guard({
     beforeHandle: verifyUser
   }, (app) => app
-    .get("/me", ({ user }) => authenticateInstitution(user._id))
-    .patch("/update", ({ body, user }) => updateInstitution(user._id, body as Partial<InstituteUpdateType>))
-    .delete("/delete", ({ user }) => deleteInstitution(user._id))
-    .get("/machines", ({ user }) => getVendingMachines(user._id))
-    .patch("/machines", ({ body, user }) => updateMachineStock(user._id, body as Partial<VendingMachineUpdateStockType>))
+    .get("/me", ({ user }) => authenticateInstitution(user.id))
+    .patch("/update", ({ body, user }) => updateInstitution(user.id, body as Partial<InstituteUpdateType>))
+    .delete("/delete", ({ user }) => deleteInstitution(user.id))
+    .get("/machines", ({ user }) => getVendingMachines(user.id))
+    .patch("/machines", ({ body, user }) => updateMachineStock(user.id, body as Partial<VendingMachineUpdateStockType>))
   );

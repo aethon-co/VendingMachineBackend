@@ -89,14 +89,14 @@ export const getVendingMachines = async (_id: string) => {
 };
 
 export const authenticateInstitution = async (_id: string) => {
-  const institute = await Institute.findById(_id);
-  if (!institute) {
+  const institution = await Institute.findById(_id).select("-password -__v -createdAt -role");
+  if (!institution) {
     throw new NotFoundError("Institute not found");
   }
   const machines = await getVendingMachines(_id);
 
   return {
-    institute,
+    institution,
     machines
   };
 };

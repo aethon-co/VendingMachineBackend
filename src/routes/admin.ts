@@ -15,9 +15,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
     .guard({
         beforeHandle: verifyUser
     }, (app) => app
-        .get("/me", ({ user }) => authenticateAdmin(user._id))
-        .patch("/update", ({ body, user }) => updateAdmin(user._id, body as Partial<AdminUpdateType>))
-        .delete("/delete", ({ user }) => deleteAdmin(user._id))
+        .get("/me", ({ user }) => authenticateAdmin(user.id))
+        .patch("/update", ({ body, user }) => updateAdmin(user.id, body as Partial<AdminUpdateType>))
+        .delete("/delete", ({ user }) => deleteAdmin(user.id))
         .get("/institutions", async () => await getAllInstitutions())
         .get("/institutions/:id", async ({ params }) => await getInstitutionById(params.id))
         .get("/machines", async () => await getAllMachines())
