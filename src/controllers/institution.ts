@@ -45,7 +45,6 @@ export const deleteInstitution = async (_id: string) => {
   return deleted;
 };
 
-
 export const loginInstitution = async (data: InstituteLoginType, jwt_institution: any) => {
   const institute = await Institute.findOne({ mail: data.mail });
   if (!institute) {
@@ -62,31 +61,64 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
     role: institute.role
   });
 
+  const machines = await VendingMachine.find({ institute_id: institute._id });
+
   return {
-    token:token,
+    token: token,
     institution: {
       id: institute._id,
       name: institute.name,
       mail: institute.mail
     },
-    machines:[]
+    machines
   };
 };
 
-export const updateMachineStock = async (_id: string, data: Partial<VendingMachineUpdateStockType>) => {
-  const machine = await VendingMachine.findByIdAndUpdate(_id, data, { new: true });
+export const updateMachineStock = async (institutionId: string, machineId: string, data: Partial<VendingMachineUpdateStockType>) => {
+  const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId });
+  if (!machine) {
+    throw new NotFoundError("Vending Machine not found");
+  }
+  if (data.items) {
+    machine.items = data.items;
+  }
+  await machine.save();
+  return machine;
+};
+
+export const getVendingMachines = async (_id: string) => {
+  const machines = await VendingMachine.find({ institute_id: _id });
+  return machines;
+};
+
+export const getVendingMachineById = async (institutionId: string, machineId: string) => {
+  const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId });
   if (!machine) {
     throw new NotFoundError("Vending Machine not found");
   }
   return machine;
 };
 
-export const getVendingMachines = async (_id: string) => {
-  const machines = await VendingMachine.find({ institute_id: _id });
-  if (!machines) {
-    throw new NotFoundError("Vending Machines not found");
+export const createMachineForInstitution = async (institutionId: string, data: { name: string; location?: string }) => {
+  if (!data.name) {
+    throw new BadRequestError("Machine name is required");
   }
-  return machines;
+  const machine = new VendingMachine({
+    name: data.name,
+    location: data.location || "",
+    institute_id: institutionId,
+    items: [],
+  });
+  await machine.save();
+  return machine;
+};
+
+export const deleteMachineForInstitution = async (institutionId: string, machineId: string) => {
+  const machine = await VendingMachine.findOneAndDelete({ _id: machineId, institute_id: institutionId });
+  if (!machine) {
+    throw new NotFoundError("Vending Machine not found");
+  }
+  return { message: "Machine deleted successfully" };
 };
 
 export const authenticateInstitution = async (_id: string) => {

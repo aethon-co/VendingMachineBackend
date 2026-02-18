@@ -1,7 +1,9 @@
 import { Schema, model } from "mongoose";
-import { FoodItemType, VendingMachineSchemaType } from "../types/vendingMachine";
+import { CellItemType, VendingMachineSchemaType } from "../types/vendingMachine";
 
-const FoodItemSchema = new Schema<FoodItemType>({
+const CellItemSchema = new Schema<CellItemType>({
+  row: { type: Number, required: true },
+  col: { type: Number, required: true },
   name: { type: String, required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true, default: 0 },
@@ -9,20 +11,16 @@ const FoodItemSchema = new Schema<FoodItemType>({
 
 export const VendingMachineSchema = new Schema<VendingMachineSchemaType>({
   name: { type: String, required: true },
-  row1: { type: FoodItemSchema, default: null },
-  row2: { type: FoodItemSchema, default: null },
-  row3: { type: FoodItemSchema, default: null },
-  row4: { type: FoodItemSchema, default: null },
+  location: { type: String, default: "" },
+  items: { type: [CellItemSchema], default: [] },
   institute_id: {
     type: Schema.Types.ObjectId,
     required: true
   },
   role: { type: String, default: "vending_machine" },
-
 });
 
 export const VendingMachine = model<VendingMachineSchemaType>(
   "VendingMachine",
   VendingMachineSchema
 );
-
