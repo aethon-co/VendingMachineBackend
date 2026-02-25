@@ -1,8 +1,9 @@
 import { Institute } from "../models/institution";
 import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
-import { VendingMachineUpdateStockType } from "../types/vendingMachine";
+import { VendingMachineUpdateStockType, VendingMachineUpdateDetailsType } from "../types/vendingMachine";
 import { VendingMachine } from "../models/vendingMachine";
+import { randomBytes } from "crypto";
 
 export const createInstitution = async (data: InstituteRegisterType, jwt_institution: any) => {
   const existing = await Institute.findOne({ mail: data.mail });
@@ -99,16 +100,50 @@ export const getVendingMachineById = async (institutionId: string, machineId: st
   return machine;
 };
 
-export const createMachineForInstitution = async (institutionId: string, data: { name: string; location?: string }) => {
+export const createMachineForInstitution = async (institutionId: string, data: { name: string; location?: string; imageUrl?: string }) => {
   if (!data.name) {
     throw new BadRequestError("Machine name is required");
   }
+  const qrToken = randomBytes(32).toString("hex");
   const machine = new VendingMachine({
     name: data.name,
     location: data.location || "",
     institute_id: institutionId,
     items: [],
+    qrToken,
+    status: "online",
+    imageUrl: data.imageUrl || "",
   });
+  await machine.save();
+  return machine;
+};
+
+export const generateQrToken = async (institutionId: string, machineId: string) => {
+  const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId });
+  if (!machine) throw new NotFoundError("Vending machine not found");
+  const qrToken = randomBytes(32).toString("hex");
+  machine.qrToken = qrToken;
+  await machine.save();
+  return { qrToken, machineId: machine._id, machineName: machine.name };
+};
+
+export const verifyQrToken = async (institutionId: string, qrToken: string) => {
+  const machine = await VendingMachine.findOne({ qrToken, institute_id: institutionId });
+  if (!machine) throw new NotFoundError("Invalid or expired QR token");
+  return {
+    machineId: machine._id,
+    machineName: machine.name,
+    location: machine.location,
+  };
+};
+
+export const updateMachineDetails = async (institutionId: string, machineId: string, data: Partial<VendingMachineUpdateDetailsType>) => {
+  const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId });
+  if (!machine) throw new NotFoundError("Vending machine not found");
+  if (data.name) machine.name = data.name;
+  if (data.location !== undefined) machine.location = data.location;
+  if (data.status) machine.status = data.status;
+  if (data.imageUrl !== undefined) machine.imageUrl = data.imageUrl;
   await machine.save();
   return machine;
 };

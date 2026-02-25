@@ -4,6 +4,7 @@ import 'dotenv/config';
 import { institutionRoutes } from "./routes/Institution";
 import { errorPlugin } from "./errors/handler";
 import { adminRoutes } from "./routes/admin";
+import { maintenanceRoutes } from "./routes/maintenance";
 
 const app = new Elysia();
 
@@ -12,7 +13,8 @@ connectDB();
 app.get("/", () => "Hello Vending Machine");
 app.use(errorPlugin);
 app.use(institutionRoutes);
-app.use(adminRoutes)
+app.use(adminRoutes);
+app.use(maintenanceRoutes);
 
 app.listen(process.env.PORT || 3000);
 console.log("Server is up and running");

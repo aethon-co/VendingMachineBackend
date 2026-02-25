@@ -6,6 +6,7 @@ export type CellItemType = {
     name: string;
     price: number;
     quantity: number;
+    imageUrl?: string;
 }
 
 export type VendingMachineSchemaType = {
@@ -13,12 +14,18 @@ export type VendingMachineSchemaType = {
     location: string;
     items: CellItemType[];
     institute_id: Types.ObjectId;
+    qrToken: string | null;
+    status: "online" | "offline" | "maintenance";
+    imageUrl: string;
     role: string;
+    createdAt: Date;
 }
 
 export type VendingMachineUpdateDetailsType = {
     name: string;
     location: string;
+    status?: "online" | "offline" | "maintenance";
+    imageUrl?: string;
     institute_id: Types.ObjectId;
 }
 
