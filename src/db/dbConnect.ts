@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGOURI!);
+    await mongoose.connect(process.env.MONGOURL!);
     console.log("MongoDB connected");
   } catch (err) {
     console.error("MongoDB connection failed:", err);

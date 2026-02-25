@@ -49,8 +49,7 @@ export const errorPlugin = new Elysia()
             default:
                 set.status = 500;
                 return {
-                    message:
-                        (error as Error).message || 'Internal Server Error'
+                    message: (error as Error).message || 'Internal Server Error'
                 };
         }
     });
