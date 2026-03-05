@@ -99,16 +99,15 @@ export const getVendingMachineById = async (institutionId: string, machineId: st
   return machine;
 };
 
-export const createMachineForInstitution = async (institutionId: string, data: { name: string; location?: string }) => {
-  if (!data.name) {
-    throw new BadRequestError("Machine name is required");
+export const linkMachineToInstitution = async (institutionId: string, machineId: string) => {
+  const machine = await VendingMachine.findById(machineId);
+  if (!machine) {
+    throw new NotFoundError("Vending Machine not found");
   }
-  const machine = new VendingMachine({
-    name: data.name,
-    location: data.location || "",
-    institute_id: institutionId,
-    items: [],
-  });
+  if (machine.institute_id) {
+    throw new BadRequestError("Machine is already linked to an institution");
+  }
+  machine.institute_id = institutionId as any;
   await machine.save();
   return machine;
 };

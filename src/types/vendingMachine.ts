@@ -2,18 +2,22 @@ import { Types } from "mongoose";
 
 export type CellItemType = {
     row: number;
-    col: number;
     name: string;
     price: number;
     quantity: number;
+    image: string;
+
 }
 
 export type VendingMachineSchemaType = {
     name: string;
     location: string;
     items: CellItemType[];
-    institute_id: Types.ObjectId;
+    institute_id: Types.ObjectId | null;
+    secret_token: string;
     role: string;
+    last_heartbeat: Date | null;
+    is_online: boolean;
 }
 
 export type VendingMachineUpdateDetailsType = {
@@ -29,5 +33,4 @@ export type VendingMachineUpdateStockType = {
 export type VendingMachineCreationType = {
     name: string;
     location?: string;
-    institute_id: Types.ObjectId;
 }

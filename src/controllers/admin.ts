@@ -1,8 +1,32 @@
+import crypto from "crypto";
 import { Admin } from "../models/admin";
 import { Institute } from "../models/institution";
 import { AdminLoginType, AdminRegisterType } from "../types/admin";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
 import { VendingMachine } from "../models/vendingMachine";
+import { VendingMachineCreationType } from "../types/vendingMachine";
+
+export const createVendingMachine = async (data: VendingMachineCreationType) => {
+    if (!data.name) {
+        throw new BadRequestError("Machine name is required");
+    }
+    const secretToken = crypto.randomUUID();
+    const machine = new VendingMachine({
+        name: data.name,
+        location: data.location || "",
+        secret_token: secretToken,
+        items: [],
+    });
+    await machine.save();
+    return {
+        machine: {
+            id: machine._id,
+            name: machine.name,
+            location: machine.location,
+        },
+        secret_token: secretToken,
+    };
+};
 
 export const getAllInstitutions = async () => {
     const institutions = await Institute.find();

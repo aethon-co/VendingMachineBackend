@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import { jwtMiddlewareAdmin } from "../middlewares/jwtAdmin";
 import { errorPlugin } from "../errors/handler";
-import { authenticateAdmin, createAdmin, deleteAdmin, getAllInstitutions, getAllMachines, getInstitutionById, getMachineById, loginAdmin, updateAdmin } from "../controllers/admin";
+import { authenticateAdmin, createAdmin, deleteAdmin, getAllInstitutions, getAllMachines, getInstitutionById, getMachineById, loginAdmin, updateAdmin, createVendingMachine } from "../controllers/admin";
 import { AdminLoginType, AdminRegisterType, AdminUpdateType } from "../types/admin";
 import { verifyUser } from "../middlewares/auth";
 import { authGuard } from "../middlewares/auth";
@@ -20,6 +20,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         .delete("/delete", ({ user }) => deleteAdmin(user.id))
         .get("/institutions", async () => await getAllInstitutions())
         .get("/institutions/:id", async ({ params }) => await getInstitutionById(params.id))
+        .post("/machines", async ({ body }) => await createVendingMachine(body as any))
         .get("/machines", async () => await getAllMachines())
         .get("/machines/:id", async ({ params }) => await getMachineById(params.id))
     )

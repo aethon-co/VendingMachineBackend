@@ -3,7 +3,6 @@ import { CellItemType, VendingMachineSchemaType } from "../types/vendingMachine"
 
 const CellItemSchema = new Schema<CellItemType>({
   row: { type: Number, required: true },
-  col: { type: Number, required: true },
   name: { type: String, required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true, default: 0 },
@@ -15,9 +14,16 @@ export const VendingMachineSchema = new Schema<VendingMachineSchemaType>({
   items: { type: [CellItemSchema], default: [] },
   institute_id: {
     type: Schema.Types.ObjectId,
-    required: true
+    default: null,
+  },
+  secret_token: {
+    type: String,
+    required: true,
+    unique: true,
   },
   role: { type: String, default: "vending_machine" },
+  last_heartbeat: { type: Date, default: null },
+  is_online: { type: Boolean, default: false },
 });
 
 export const VendingMachine = model<VendingMachineSchemaType>(

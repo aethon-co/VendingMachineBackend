@@ -9,9 +9,9 @@ import {
   loginInstitution,
   getVendingMachines,
   getVendingMachineById,
-  createMachineForInstitution,
   deleteMachineForInstitution,
   updateMachineStock,
+  linkMachineToInstitution,
 } from "../controllers/institution";
 import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution";
 import { authGuard, verifyUser } from "../middlewares/auth";
@@ -31,7 +31,7 @@ export const institutionRoutes = new Elysia({ prefix: "/institution" })
     .delete("/delete", ({ user }) => deleteInstitution(user.id))
     .get("/machines", ({ user }) => getVendingMachines(user.id))
     .get("/machines/:id", ({ user, params }) => getVendingMachineById(user.id, params.id))
-    .post("/machines", ({ body, user }) => createMachineForInstitution(user.id, body as { name: string; location?: string }))
+    .post("/machines/link", ({ body, user }) => linkMachineToInstitution(user.id, (body as any).machine_id))
     .patch("/machines/:id", ({ body, user, params }) => updateMachineStock(user.id, params.id, body as Partial<VendingMachineUpdateStockType>))
     .delete("/machines/:id", ({ user, params }) => deleteMachineForInstitution(user.id, params.id))
   );
