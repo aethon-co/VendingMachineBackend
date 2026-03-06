@@ -6,7 +6,7 @@ const CellItemSchema = new Schema<CellItemType>({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true, default: 0 },
-  imageUrl: { type: String, default: "" },
+  image: { type: String, default: "" },
 });
 
 export const VendingMachineSchema = new Schema<VendingMachineSchemaType>({
@@ -22,16 +22,9 @@ export const VendingMachineSchema = new Schema<VendingMachineSchemaType>({
     required: true,
     unique: true,
   },
-  qrToken: { type: String, default: null },
-  status: { type: String, enum: ["online", "offline", "maintenance"], default: "online" },
-  imageUrl: { type: String, default: "" },
   role: { type: String, default: "vending_machine" },
-<<<<<<< HEAD
   last_heartbeat: { type: Date, default: null },
   is_online: { type: Boolean, default: false },
-=======
-  createdAt: { type: Date, default: Date.now },
->>>>>>> a6ff7b6862c6c19005548952fcdcadf53de3a127
 });
 
 export const VendingMachine = model<VendingMachineSchemaType>(

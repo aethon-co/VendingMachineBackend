@@ -9,7 +9,7 @@ import { authGuard } from "../middlewares/auth";
 export const adminRoutes = new Elysia({ prefix: "/admin" })
     .use(errorPlugin)
     .use(jwtMiddlewareAdmin)
-    .post("/", async ({ body, jwt_admin }) => await createAdmin(body as AdminRegisterType, jwt_admin))
+    .post("/signup", async ({ body, jwt_admin }) => await createAdmin(body as AdminRegisterType, jwt_admin))
     .post("/login", async ({ body, jwt_admin }) => await loginAdmin(body as AdminLoginType, jwt_admin))
     .use(authGuard("admin"))
     .guard({

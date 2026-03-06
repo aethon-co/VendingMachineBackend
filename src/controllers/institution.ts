@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { Institute } from "../models/institution";
 import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
@@ -75,19 +76,22 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
 };
 
 export const updateMachineStock = async (institutionId: string, machineId: string, data: Partial<VendingMachineUpdateStockType>) => {
-  const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId });
+  const updateQuery = data.items ? { $set: { items: data.items } } : {};
+
+  const machine = await VendingMachine.findOneAndUpdate(
+    { _id: machineId, institute_id: institutionId },
+    updateQuery,
+    { new: true }
+  );
+
   if (!machine) {
     throw new NotFoundError("Vending Machine not found");
   }
-  if (data.items) {
-    machine.items = data.items;
-  }
-  await machine.save();
   return machine;
 };
 
-export const getVendingMachines = async (_id: string) => {
-  const machines = await VendingMachine.find({ institute_id: _id });
+export const getVendingMachines = async (institutionId: string) => {
+  const machines = await VendingMachine.find({ institute_id: institutionId });
   return machines;
 };
 
@@ -99,16 +103,22 @@ export const getVendingMachineById = async (institutionId: string, machineId: st
   return machine;
 };
 
+
+
 export const linkMachineToInstitution = async (institutionId: string, machineId: string) => {
-  const machine = await VendingMachine.findById(machineId);
+
+  const machine = await VendingMachine.findOneAndUpdate(
+    { _id: machineId, institute_id: null },
+    { $set: { institute_id: new Types.ObjectId(institutionId) } },
+    { new: true }
+  );
+
   if (!machine) {
-    throw new NotFoundError("Vending Machine not found");
-  }
-  if (machine.institute_id) {
+    const exists = await VendingMachine.findById(machineId);
+    if (!exists) throw new NotFoundError("Vending Machine not found");
     throw new BadRequestError("Machine is already linked to an institution");
   }
-  machine.institute_id = institutionId as any;
-  await machine.save();
+
   return machine;
 };
 

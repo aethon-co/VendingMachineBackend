@@ -1,7 +1,7 @@
 import { VendingMachine } from "../models/vendingMachine";
 import { NotFoundError, UnauthorizedError } from "../errors/handler";
 
-const HEARTBEAT_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes — if no heartbeat within this, consider offline
+const HEARTBEAT_TIMEOUT_MS = 35 * 60 * 1000; // 35 minutes — allows a 5 minute grace period for the 30-minute pings
 
 export const initMachine = async (secretToken: string) => {
     const machine = await VendingMachine.findOne({ secret_token: secretToken });
