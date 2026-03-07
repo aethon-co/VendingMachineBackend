@@ -1,5 +1,5 @@
 import { connect } from 'mongoose';
-import { VendingMachine } from './src/models/vendingMachine.ts';
+import { VendingMachine } from './src/models/vendingMachine';
 
 const MONGOURL = process.env.MONGOURL || "mongodb+srv://contactaethon_db_user:vbKBhEDZ^SVJftSCdwqFXU1D3jD@gym.yewk3dp.mongodb.net/VendingMachine?appName=GYM";
 

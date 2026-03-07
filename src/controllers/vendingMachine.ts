@@ -53,3 +53,29 @@ export const getMachineStatus = async (machineId: string) => {
         last_heartbeat: machine.last_heartbeat,
     };
 };
+
+export const purchase = async (machineId: string, secretToken: string, purchasedItems: { row: number, quantity: number }[]) => {
+    // 1. Verify machine
+    const machine = await VendingMachine.findOne({ _id: machineId, secret_token: secretToken });
+    if (!machine) {
+        throw new UnauthorizedError("Invalid machine ID or secret token");
+    }
+
+    // 2. Deduct quantities
+    let itemsUpdated = false;
+    for (const purchased of purchasedItems) {
+        const itemIndex = machine.items.findIndex(i => i.row === purchased.row);
+        if (itemIndex > -1 && machine.items[itemIndex].quantity >= purchased.quantity) {
+            machine.items[itemIndex].quantity -= purchased.quantity;
+            itemsUpdated = true;
+        }
+    }
+
+    // 3. Save
+    if (itemsUpdated) {
+        machine.markModified('items');
+        await machine.save();
+    }
+
+    return { status: "success", items: machine.items };
+};
