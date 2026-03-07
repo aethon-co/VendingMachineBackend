@@ -1,5 +1,5 @@
 import { VendingMachine } from "../models/vendingMachine";
-import { NotFoundError, UnauthorizedError } from "../errors/handler";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
 
 const HEARTBEAT_TIMEOUT_MS = 35 * 60 * 1000; // 35 minutes — allows a 5 minute grace period for the 30-minute pings
 
@@ -15,6 +15,7 @@ export const initMachine = async (secretToken: string) => {
         institute_id: machine.institute_id,
         items: machine.items,
         is_online: machine.is_online,
+        upi_vpa: machine.upi_vpa || "",
     };
 };
 
@@ -71,11 +72,95 @@ export const purchase = async (machineId: string, secretToken: string, purchased
         }
     }
 
-    // 3. Save
     if (itemsUpdated) {
         machine.markModified('items');
         await machine.save();
     }
 
     return { status: "success", items: machine.items };
+};
+
+const verifyMachine = async (machineId: string, secretToken: string) => {
+    const machine = await VendingMachine.findOne({ _id: machineId, secret_token: secretToken });
+    if (!machine) {
+        throw new UnauthorizedError("Invalid machine ID or secret token");
+    }
+    return machine;
+};
+
+const getRazorpayAuth = () => {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keyId || !keySecret) {
+        throw new BadRequestError("RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET not set in backend environment");
+    }
+    return "Basic " + Buffer.from(`${keyId}:${keySecret}`).toString("base64");
+};
+
+export const createPaymentQR = async (machineId: string, secretToken: string, amountInRupees: number) => {
+    const machine = await verifyMachine(machineId, secretToken);
+
+    if (!Number.isFinite(amountInRupees) || amountInRupees <= 0) {
+        throw new BadRequestError("Amount must be greater than zero");
+    }
+
+    const amountInPaise = Math.round(amountInRupees * 100);
+    const closeBy = Math.floor(Date.now() / 1000) + 20 * 60;
+    const auth = getRazorpayAuth();
+
+    const res = await fetch("https://api.razorpay.com/v1/payments/qr_codes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: auth,
+        },
+        body: JSON.stringify({
+            type: "upi_qr",
+            name: machine.name || "Vending Machine",
+            usage: "single_use",
+            fixed_amount: true,
+            payment_amount: amountInPaise,
+            description: "Vending Machine Order",
+            close_by: closeBy,
+        }),
+    });
+
+    const data: any = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        throw new BadRequestError(data?.error?.description || "Failed to create Razorpay QR code");
+    }
+
+    const imageUrl = typeof data?.image_url === "string" ? data.image_url : "";
+    const shortUrl = typeof data?.short_url === "string" ? data.short_url : "";
+    if (!imageUrl && !shortUrl) {
+        throw new BadRequestError("Razorpay QR response missing both image_url and short_url");
+    }
+
+    return { qrId: data.id, imageUrl, shortUrl, amount: amountInRupees };
+};
+
+export const checkQRPayment = async (machineId: string, secretToken: string, qrId: string) => {
+    await verifyMachine(machineId, secretToken);
+    const auth = getRazorpayAuth();
+
+    const res = await fetch(`https://api.razorpay.com/v1/payments/qr_codes/${qrId}/payments`, {
+        headers: { Authorization: auth },
+    });
+    if (!res.ok) return { paid: false };
+
+    const data: any = await res.json();
+    const captured = (data.items || []).find((p: any) => p.status === "captured");
+    return { paid: !!captured, paymentId: captured?.id };
+};
+
+export const closePaymentQR = async (machineId: string, secretToken: string, qrId: string) => {
+    await verifyMachine(machineId, secretToken);
+    const auth = getRazorpayAuth();
+
+    await fetch(`https://api.razorpay.com/v1/payments/qr_codes/${qrId}/close`, {
+        method: "POST",
+        headers: { Authorization: auth },
+    }).catch(() => { });
+
+    return true;
 };

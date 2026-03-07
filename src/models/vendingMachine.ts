@@ -25,6 +25,7 @@ export const VendingMachineSchema = new Schema<VendingMachineSchemaType>({
   role: { type: String, default: "vending_machine" },
   last_heartbeat: { type: Date, default: null },
   is_online: { type: Boolean, default: false },
+  upi_vpa: { type: String, default: "" },
 });
 
 export const VendingMachine = model<VendingMachineSchemaType>(

@@ -18,12 +18,14 @@ export type VendingMachineSchemaType = {
     role: string;
     last_heartbeat: Date | null;
     is_online: boolean;
+    upi_vpa: string;
 }
 
 export type VendingMachineUpdateDetailsType = {
     name: string;
     location: string;
     institute_id: Types.ObjectId;
+    upi_vpa: string;
 }
 
 export type VendingMachineUpdateStockType = {

@@ -132,3 +132,11 @@ export const getMachineById = async (id: string) => {
     }
     return machine;
 };
+
+export const updateVendingMachine = async (id: string, data: Partial<{ name: string; location: string; upi_vpa: string }>) => {
+    const machine = await VendingMachine.findByIdAndUpdate(id, data, { new: true });
+    if (!machine) {
+        throw new NotFoundError("Vending Machine not found");
+    }
+    return machine;
+};
