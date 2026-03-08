@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import bcrypt from "bcryptjs";
 import { Institute } from "../models/institution.js";
 import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution.js";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler.js";
@@ -13,7 +14,7 @@ export const createInstitution = async (data: InstituteRegisterType, jwt_institu
     throw new BadRequestError("Institution already exists");
   }
 
-  const hashedPassword = await Bun.password.hash(String(data.password));
+  const hashedPassword = await bcrypt.hash(String(data.password), 10);
 
   // Explicitly pick properties to avoid mass assignment
   const newInstitution = new Institute({
@@ -64,7 +65,7 @@ export const deleteInstitution = async (_id: string) => {
 };
 
 // 3. Dummy hash to prevent timing attacks
-const DUMMY_HASH = await Bun.password.hash("dummy_password_to_prevent_timing_attacks");
+const DUMMY_HASH = await bcrypt.hash("dummy_password_to_prevent_timing_attacks", 10);
 
 export const loginInstitution = async (data: InstituteLoginType, jwt_institution: any) => {
   // 4. Fix NoSQL Injection
@@ -74,11 +75,11 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
   // 3. Fix Timing Attack
   if (!institute) {
     // Run the hash verify anyway to take the same amount of time
-    await Bun.password.verify(String(data.password), DUMMY_HASH);
+    await bcrypt.compare(String(data.password), DUMMY_HASH);
     throw new UnauthorizedError("Invalid credentials");
   }
 
-  const isMatch = await Bun.password.verify(String(data.password), institute.password);
+  const isMatch = await bcrypt.compare(String(data.password), institute.password);
   if (!isMatch) {
     throw new UnauthorizedError("Invalid credentials");
   }

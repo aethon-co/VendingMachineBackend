@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import { Admin } from "../models/admin.js";
 import { Institute } from "../models/institution.js";
 import { AdminLoginType, AdminRegisterType } from "../types/admin.js";
@@ -49,7 +50,7 @@ export const createAdmin = async (data: AdminRegisterType, jwt_admin: any) => {
     if (existing) {
         throw new BadRequestError("Admin already exists");
     }
-    const hashedPassword = await Bun.password.hash(data.password);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     const admin = new Admin({ ...data, password: hashedPassword });
     await admin.save();
     const token = await jwt_admin.sign({
@@ -96,7 +97,7 @@ export const loginAdmin = async (data: AdminLoginType, jwt_admin: any) => {
     if (!admin) {
         throw new UnauthorizedError("Invalid credentials");
     }
-    const isMatch = await Bun.password.verify(data.password, admin.password);
+    const isMatch = await bcrypt.compare(data.password, admin.password);
     if (!isMatch) {
         throw new UnauthorizedError("Invalid credentials");
     }
