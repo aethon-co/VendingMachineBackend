@@ -1,20 +1,26 @@
 import { VendingMachine } from "../models/vendingMachine";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
 
-const HEARTBEAT_TIMEOUT_MS = 35 * 60 * 1000; // 35 minutes — allows a 5 minute grace period for the 30-minute pings
+const HEARTBEAT_TIMEOUT_MS = 60 * 60 * 1000;
 
 export const initMachine = async (secretToken: string) => {
     const machine = await VendingMachine.findOne({ secret_token: secretToken });
     if (!machine) {
         throw new UnauthorizedError("Invalid secret token");
     }
+
+    // Compute online status dynamically
+    const isOnline = machine.last_heartbeat
+        ? (Date.now() - new Date(machine.last_heartbeat).getTime()) < HEARTBEAT_TIMEOUT_MS
+        : false;
+
     return {
         id: machine._id,
         name: machine.name,
         location: machine.location,
         institute_id: machine.institute_id,
         items: machine.items,
-        is_online: machine.is_online,
+        is_online: isOnline,
         upi_vpa: machine.upi_vpa || "",
     };
 };
@@ -22,7 +28,7 @@ export const initMachine = async (secretToken: string) => {
 export const heartbeat = async (machineId: string, secretToken: string) => {
     const machine = await VendingMachine.findOneAndUpdate(
         { _id: machineId, secret_token: secretToken },
-        { last_heartbeat: new Date(), is_online: true },
+        { last_heartbeat: new Date() }, // Removed is_online: true
         { new: true }
     );
     if (!machine) {
@@ -40,12 +46,6 @@ export const getMachineStatus = async (machineId: string) => {
     const isOnline = machine.last_heartbeat
         ? (Date.now() - new Date(machine.last_heartbeat).getTime()) < HEARTBEAT_TIMEOUT_MS
         : false;
-
-    // Update is_online if stale
-    if (machine.is_online !== isOnline) {
-        machine.is_online = isOnline;
-        await machine.save();
-    }
 
     return {
         id: machine._id,

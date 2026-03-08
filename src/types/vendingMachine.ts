@@ -17,7 +17,6 @@ export type VendingMachineSchemaType = {
     secret_token: string;
     role: string;
     last_heartbeat: Date | null;
-    is_online: boolean;
     upi_vpa: string;
 }
 

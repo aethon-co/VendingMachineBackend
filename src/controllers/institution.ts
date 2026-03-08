@@ -6,12 +6,22 @@ import { VendingMachineUpdateStockType } from "../types/vendingMachine";
 import { VendingMachine } from "../models/vendingMachine";
 
 export const createInstitution = async (data: InstituteRegisterType, jwt_institution: any) => {
-  const existing = await Institute.findOne({ mail: data.mail });
+  // 1 & 4. Fix Mass Assignment and NoSQL Injection
+  const mail = String(data.mail);
+  const existing = await Institute.findOne({ mail });
   if (existing) {
     throw new BadRequestError("Institution already exists");
   }
-  const hashedPassword = await Bun.password.hash(data.password);
-  const newInstitution = new Institute({ ...data, password: hashedPassword });
+
+  const hashedPassword = await Bun.password.hash(String(data.password));
+
+  // Explicitly pick properties to avoid mass assignment
+  const newInstitution = new Institute({
+    name: data.name,
+    mail: mail,
+    password: hashedPassword,
+    // Add any other specific required fields from register type, but do not spread `...data`
+  });
   await newInstitution.save();
 
   const token = await jwt_institution.sign({
@@ -31,7 +41,14 @@ export const createInstitution = async (data: InstituteRegisterType, jwt_institu
 };
 
 export const updateInstitution = async (_id: string, data: Partial<InstituteUpdateType>) => {
-  const updated = await Institute.findByIdAndUpdate(_id, data, { new: true });
+  // 1. Fix Mass Assignment - strictly pick fields
+  const safeData: Partial<InstituteUpdateType> = {};
+  if (data.name) safeData.name = data.name;
+  if (data.mail) safeData.mail = String(data.mail);
+  // (Password updates are intentionally ignored here per user request, will be handled separately)
+
+  const updated = await Institute.findByIdAndUpdate(_id, { $set: safeData }, { new: true })
+    .select("-password -refreshToken -__v");
   if (!updated) {
     throw new NotFoundError("Institution not found");
   }
@@ -39,19 +56,29 @@ export const updateInstitution = async (_id: string, data: Partial<InstituteUpda
 };
 
 export const deleteInstitution = async (_id: string) => {
-  const deleted = await Institute.findByIdAndDelete(_id);
+  const deleted = await Institute.findByIdAndDelete(_id).select("-password -refreshToken -__v");
   if (!deleted) {
     throw new NotFoundError("Institution not found");
   }
   return deleted;
 };
 
+// 3. Dummy hash to prevent timing attacks
+const DUMMY_HASH = await Bun.password.hash("dummy_password_to_prevent_timing_attacks");
+
 export const loginInstitution = async (data: InstituteLoginType, jwt_institution: any) => {
-  const institute = await Institute.findOne({ mail: data.mail });
+  // 4. Fix NoSQL Injection
+  const mail = String(data.mail);
+  const institute = await Institute.findOne({ mail });
+
+  // 3. Fix Timing Attack
   if (!institute) {
+    // Run the hash verify anyway to take the same amount of time
+    await Bun.password.verify(String(data.password), DUMMY_HASH);
     throw new UnauthorizedError("Invalid credentials");
   }
-  const isMatch = await Bun.password.verify(data.password, institute.password);
+
+  const isMatch = await Bun.password.verify(String(data.password), institute.password);
   if (!isMatch) {
     throw new UnauthorizedError("Invalid credentials");
   }
@@ -62,7 +89,7 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
     role: institute.role
   });
 
-  const machines = await VendingMachine.find({ institute_id: institute._id });
+  const machines = await VendingMachine.find({ institute_id: institute._id }).select("-secret_token -__v");
 
   return {
     token: token,
@@ -82,7 +109,7 @@ export const updateMachineStock = async (institutionId: string, machineId: strin
     { _id: machineId, institute_id: institutionId },
     updateQuery,
     { new: true }
-  );
+  ).select("-secret_token -__v");
 
   if (!machine) {
     throw new NotFoundError("Vending Machine not found");
@@ -91,12 +118,12 @@ export const updateMachineStock = async (institutionId: string, machineId: strin
 };
 
 export const getVendingMachines = async (institutionId: string) => {
-  const machines = await VendingMachine.find({ institute_id: institutionId });
+  const machines = await VendingMachine.find({ institute_id: institutionId }).select("-secret_token -__v");
   return machines;
 };
 
 export const getVendingMachineById = async (institutionId: string, machineId: string) => {
-  const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId });
+  const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId }).select("-secret_token -__v");
   if (!machine) {
     throw new NotFoundError("Vending Machine not found");
   }
@@ -111,7 +138,7 @@ export const linkMachineToInstitution = async (institutionId: string, machineId:
     { _id: machineId, institute_id: null },
     { $set: { institute_id: new Types.ObjectId(institutionId) } },
     { new: true }
-  );
+  ).select("-secret_token -__v");
 
   if (!machine) {
     const exists = await VendingMachine.findById(machineId);
@@ -123,7 +150,7 @@ export const linkMachineToInstitution = async (institutionId: string, machineId:
 };
 
 export const deleteMachineForInstitution = async (institutionId: string, machineId: string) => {
-  const machine = await VendingMachine.findOneAndDelete({ _id: machineId, institute_id: institutionId });
+  const machine = await VendingMachine.findOneAndDelete({ _id: machineId, institute_id: institutionId }).select("-secret_token -__v");
   if (!machine) {
     throw new NotFoundError("Vending Machine not found");
   }
@@ -131,7 +158,7 @@ export const deleteMachineForInstitution = async (institutionId: string, machine
 };
 
 export const authenticateInstitution = async (_id: string) => {
-  const institution = await Institute.findById(_id).select("-password -__v -createdAt -role");
+  const institution = await Institute.findById(_id).select("-password -refreshToken -__v");
   if (!institution) {
     throw new NotFoundError("Institute not found");
   }
