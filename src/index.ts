@@ -28,7 +28,7 @@ app.use(uploadRoutes);
 
 // Listen locally if true, otherwise let Vercel handle the exported web standard fetch API
 if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-    app.listen(process.env.PORT || 3000);
+    app.listen({ port: process.env.PORT || 3000, hostname: "0.0.0.0" });
     console.log("Server is up and running");
 }
 
