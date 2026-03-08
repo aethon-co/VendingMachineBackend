@@ -1,6 +1,7 @@
 {
   "name": "vending-machine-backend",
   "version": "1.0.50",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts"
@@ -14,8 +15,7 @@
     "mongoose": "^8.19.1"
   },
   "devDependencies": {
-    "bun-types": "latest",
-    "vercel-bun": "^0.0.1-alpha.5"
+    "bun-types": "latest"
   },
   "module": "src/index.js"
 }
