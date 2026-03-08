@@ -7,8 +7,10 @@ import { adminRoutes } from "./routes/admin.js";
 import { vendingMachineRoutes } from "./routes/vendingMachine.js";
 
 import { uploadRoutes } from "./routes/upload.js";
+import cors from "@elysiajs/cors";
 
 const app = new Elysia();
+app.use(cors());
 
 connectDB();
 
