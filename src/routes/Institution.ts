@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
-import { jwtMiddlewareInstitution } from "../middlewares/jwtInstitution";
-import { errorPlugin } from "../errors/handler";
+import { jwtMiddlewareInstitution } from "../middlewares/jwtInstitution.js";
+import { errorPlugin } from "../errors/handler.js";
 import {
   createInstitution,
   updateInstitution,
@@ -12,10 +12,10 @@ import {
   deleteMachineForInstitution,
   updateMachineStock,
   linkMachineToInstitution,
-} from "../controllers/institution";
-import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution";
-import { authGuard, verifyUser } from "../middlewares/auth";
-import { VendingMachineUpdateStockType } from "../types/vendingMachine";
+} from "../controllers/institution.js";
+import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution.js";
+import { authGuard, verifyUser } from "../middlewares/auth.js";
+import { VendingMachineUpdateStockType } from "../types/vendingMachine.js";
 
 export const institutionRoutes = new Elysia({ prefix: "/institution" })
   .use(errorPlugin)

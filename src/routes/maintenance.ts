@@ -1,14 +1,14 @@
 import { Elysia } from "elysia";
-import { jwtMiddlewareInstitution } from "../middlewares/jwtInstitution";
-import { errorPlugin } from "../errors/handler";
-import { authGuard, verifyUser } from "../middlewares/auth";
+import { jwtMiddlewareInstitution } from "../middlewares/jwtInstitution.js";
+import { errorPlugin } from "../errors/handler.js";
+import { authGuard, verifyUser } from "../middlewares/auth.js";
 import {
   getMaintenanceLogs,
   createMaintenanceLog,
   updateMaintenanceLog,
   deleteMaintenanceLog,
-} from "../controllers/maintenance";
-import { CreateMaintenanceLogType, UpdateMaintenanceLogType } from "../types/maintenanceLog";
+} from "../controllers/maintenance.js";
+import { CreateMaintenanceLogType, UpdateMaintenanceLogType } from "../types/maintenanceLog.js";
 
 export const maintenanceRoutes = new Elysia({ prefix: "/maintenance" })
   .use(errorPlugin)

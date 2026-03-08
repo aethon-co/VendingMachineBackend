@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
-import { errorPlugin } from "../errors/handler";
-import { checkQRPayment, closePaymentQR, createPaymentQR, getMachineStatus, heartbeat, initMachine, purchase } from "../controllers/vendingMachine";
+import { errorPlugin } from "../errors/handler.js";
+import { checkQRPayment, closePaymentQR, createPaymentQR, getMachineStatus, heartbeat, initMachine, purchase } from "../controllers/vendingMachine.js";
 
 export const vendingMachineRoutes = new Elysia({ prefix: "/vending" })
     .use(errorPlugin)

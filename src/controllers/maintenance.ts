@@ -1,7 +1,7 @@
-import { MaintenanceLog } from "../models/maintenanceLog";
-import { VendingMachine } from "../models/vendingMachine";
-import { BadRequestError, NotFoundError } from "../errors/handler";
-import { CreateMaintenanceLogType, UpdateMaintenanceLogType } from "../types/maintenanceLog";
+import { MaintenanceLog } from "../models/maintenanceLog.js";
+import { VendingMachine } from "../models/vendingMachine.js";
+import { BadRequestError, NotFoundError } from "../errors/handler.js";
+import { CreateMaintenanceLogType, UpdateMaintenanceLogType } from "../types/maintenanceLog.js";
 
 export const getMaintenanceLogs = async (institutionId: string, machineId: string) => {
   const machine = await VendingMachine.findOne({ _id: machineId, institute_id: institutionId });

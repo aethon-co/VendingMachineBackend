@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { MaintenanceLogSchemaType } from "../types/maintenanceLog";
+import { MaintenanceLogSchemaType } from "../types/maintenanceLog.js";
 
 const MaintenanceLogSchema = new Schema<MaintenanceLogSchemaType>({
   machine_id: { type: Schema.Types.ObjectId, required: true, ref: "VendingMachine" },

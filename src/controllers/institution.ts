@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
-import { Institute } from "../models/institution";
-import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
-import { VendingMachineUpdateStockType } from "../types/vendingMachine";
-import { VendingMachine } from "../models/vendingMachine";
+import { Institute } from "../models/institution.js";
+import { InstituteLoginType, InstituteRegisterType, InstituteUpdateType } from "../types/institution.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler.js";
+import { VendingMachineUpdateStockType } from "../types/vendingMachine.js";
+import { VendingMachine } from "../models/vendingMachine.js";
 
 export const createInstitution = async (data: InstituteRegisterType, jwt_institution: any) => {
   // 1 & 4. Fix Mass Assignment and NoSQL Injection

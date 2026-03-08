@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
-import { uploadImageToS3 } from "../controllers/upload";
-import { jwtMiddlewareInstitution } from "../middlewares/jwtInstitution";
-import { authGuard, verifyUser } from "../middlewares/auth";
+import { uploadImageToS3 } from "../controllers/upload.js";
+import { jwtMiddlewareInstitution } from "../middlewares/jwtInstitution.js";
+import { authGuard, verifyUser } from "../middlewares/auth.js";
 
 export const uploadRoutes = new Elysia({ prefix: "/upload" })
     .use(jwtMiddlewareInstitution)

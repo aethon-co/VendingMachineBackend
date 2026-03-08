@@ -1,10 +1,10 @@
 import crypto from "crypto";
-import { Admin } from "../models/admin";
-import { Institute } from "../models/institution";
-import { AdminLoginType, AdminRegisterType } from "../types/admin";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
-import { VendingMachine } from "../models/vendingMachine";
-import { VendingMachineCreationType } from "../types/vendingMachine";
+import { Admin } from "../models/admin.js";
+import { Institute } from "../models/institution.js";
+import { AdminLoginType, AdminRegisterType } from "../types/admin.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler.js";
+import { VendingMachine } from "../models/vendingMachine.js";
+import { VendingMachineCreationType } from "../types/vendingMachine.js";
 
 export const createVendingMachine = async (data: VendingMachineCreationType) => {
     if (!data.name) {

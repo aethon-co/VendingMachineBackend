@@ -1,5 +1,5 @@
-import { VendingMachine } from "../models/vendingMachine";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler";
+import { VendingMachine } from "../models/vendingMachine.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/handler.js";
 
 const HEARTBEAT_TIMEOUT_MS = 60 * 60 * 1000;
 

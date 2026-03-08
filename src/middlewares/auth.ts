@@ -1,5 +1,5 @@
 import Elysia from "elysia";
-import { UnauthorizedError } from "../errors/handler";
+import { UnauthorizedError } from "../errors/handler.js";
 
 export const authGuard = (role: "institution" | "admin" | "vending") => (app: Elysia) =>
     app.derive(async ({ jwt_institution, jwt_admin, jwt_vending_machine, headers }: any) => {

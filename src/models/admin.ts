@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { AdminSchemaType } from "../types/admin";
+import { AdminSchemaType } from "../types/admin.js";
 
 const AdminSchema = new Schema({
     name: {

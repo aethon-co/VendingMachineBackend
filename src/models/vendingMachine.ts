@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { CellItemType, VendingMachineSchemaType } from "../types/vendingMachine";
+import { CellItemType, VendingMachineSchemaType } from "../types/vendingMachine.js";
 
 const CellItemSchema = new Schema<CellItemType>({
   row: { type: Number, required: true },

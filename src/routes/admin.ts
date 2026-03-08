@@ -1,10 +1,10 @@
 import Elysia from "elysia";
-import { jwtMiddlewareAdmin } from "../middlewares/jwtAdmin";
-import { errorPlugin } from "../errors/handler";
-import { authenticateAdmin, createAdmin, deleteAdmin, getAllInstitutions, getAllMachines, getInstitutionById, getMachineById, loginAdmin, updateAdmin, createVendingMachine, updateVendingMachine } from "../controllers/admin";
-import { AdminLoginType, AdminRegisterType, AdminUpdateType } from "../types/admin";
-import { verifyUser } from "../middlewares/auth";
-import { authGuard } from "../middlewares/auth";
+import { jwtMiddlewareAdmin } from "../middlewares/jwtAdmin.js";
+import { errorPlugin } from "../errors/handler.js";
+import { authenticateAdmin, createAdmin, deleteAdmin, getAllInstitutions, getAllMachines, getInstitutionById, getMachineById, loginAdmin, updateAdmin, createVendingMachine, updateVendingMachine } from "../controllers/admin.js";
+import { AdminLoginType, AdminRegisterType, AdminUpdateType } from "../types/admin.js";
+import { verifyUser } from "../middlewares/auth.js";
+import { authGuard } from "../middlewares/auth.js";
 
 export const adminRoutes = new Elysia({ prefix: "/admin" })
     .use(errorPlugin)

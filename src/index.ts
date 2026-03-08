@@ -1,12 +1,12 @@
 import { Elysia } from "elysia";
-import { connectDB } from "./db/dbConnect";
+import { connectDB } from "./db/dbConnect.js";
 import 'dotenv/config';
-import { institutionRoutes } from "./routes/Institution";
-import { errorPlugin } from "./errors/handler";
-import { adminRoutes } from "./routes/admin";
-import { vendingMachineRoutes } from "./routes/vendingMachine";
+import { institutionRoutes } from "./routes/Institution.js";
+import { errorPlugin } from "./errors/handler.js";
+import { adminRoutes } from "./routes/admin.js";
+import { vendingMachineRoutes } from "./routes/vendingMachine.js";
 
-import { uploadRoutes } from "./routes/upload";
+import { uploadRoutes } from "./routes/upload.js";
 
 const app = new Elysia();
 
