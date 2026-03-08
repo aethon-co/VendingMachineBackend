@@ -29,7 +29,7 @@ export const createVendingMachine = async (data: VendingMachineCreationType) => 
 };
 
 export const getAllInstitutions = async () => {
-    const institutions = await Institute.find();
+    const institutions = await Institute.find().select("-password -refreshToken -__v");
     if (!institutions) {
         throw new NotFoundError("No Institutions found");
     }
@@ -37,7 +37,7 @@ export const getAllInstitutions = async () => {
 };
 
 export const getInstitutionById = async (_id: string) => {
-    const institution = await Institute.findById(_id);
+    const institution = await Institute.findById(_id).select("-password -refreshToken -__v");
     if (!institution) {
         throw new NotFoundError("Institution not found");
     }
@@ -68,7 +68,7 @@ export const createAdmin = async (data: AdminRegisterType, jwt_admin: any) => {
 };
 
 export const updateAdmin = async (_id: string, data: Partial<AdminRegisterType>) => {
-    const updated = await Admin.findByIdAndUpdate(_id, data, { new: true });
+    const updated = await Admin.findByIdAndUpdate(_id, data, { new: true }).select("-password");
     if (!updated) {
         throw new NotFoundError("Admin not found");
     }
@@ -84,7 +84,7 @@ export const deleteAdmin = async (_id: string) => {
 };
 
 export const authenticateAdmin = async (_id: string) => {
-    const admin = await Admin.findById(_id);
+    const admin = await Admin.findById(_id).select("-password");
     if (!admin) {
         throw new NotFoundError("User not found");
     }
@@ -118,7 +118,7 @@ export const loginAdmin = async (data: AdminLoginType, jwt_admin: any) => {
 };
 
 export const getAllMachines = async () => {
-    const machines = await VendingMachine.find();
+    const machines = await VendingMachine.find().select("-secret_token -__v");
     if (!machines) {
         throw new NotFoundError("No Vending Machines found");
     }
@@ -126,7 +126,7 @@ export const getAllMachines = async () => {
 };
 
 export const getMachineById = async (id: string) => {
-    const machine = await VendingMachine.findById(id);
+    const machine = await VendingMachine.findById(id).select("-secret_token -__v");
     if (!machine) {
         throw new NotFoundError("Vending Machine not found");
     }
@@ -134,7 +134,7 @@ export const getMachineById = async (id: string) => {
 };
 
 export const updateVendingMachine = async (id: string, data: Partial<{ name: string; location: string; upi_vpa: string }>) => {
-    const machine = await VendingMachine.findByIdAndUpdate(id, data, { new: true });
+    const machine = await VendingMachine.findByIdAndUpdate(id, data, { new: true }).select("-secret_token -__v");
     if (!machine) {
         throw new NotFoundError("Vending Machine not found");
     }
