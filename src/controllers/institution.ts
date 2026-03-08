@@ -67,6 +67,25 @@ export const deleteInstitution = async (_id: string) => {
 // 3. Dummy hash to prevent timing attacks
 const DUMMY_HASH = await bcrypt.hash("dummy_password_to_prevent_timing_attacks", 10);
 
+// Helper to verify password against both bcrypt and Argon2 hashes
+async function verifyPassword(plaintext: string, hash: string): Promise<boolean> {
+  if (hash.startsWith("$2")) {
+    // bcrypt hash
+    return bcrypt.compare(plaintext, hash);
+  } else if (hash.startsWith("$argon2")) {
+    // Argon2 hash — use Bun's built-in verify if available (dev), otherwise fail
+    if (typeof globalThis.Bun !== "undefined" && globalThis.Bun?.password?.verify) {
+      return globalThis.Bun.password.verify(plaintext, hash);
+    }
+    // On Node.js (Vercel), Argon2 verification is not available without a native module.
+    // These passwords should be migrated to bcrypt.
+    return false;
+  } else {
+    // Plaintext fallback (should not happen, but handle gracefully)
+    return plaintext === hash;
+  }
+}
+
 export const loginInstitution = async (data: InstituteLoginType, jwt_institution: any) => {
   // 4. Fix NoSQL Injection
   const mail = String(data.mail);
@@ -79,9 +98,16 @@ export const loginInstitution = async (data: InstituteLoginType, jwt_institution
     throw new UnauthorizedError("Invalid credentials");
   }
 
-  const isMatch = await bcrypt.compare(String(data.password), institute.password);
+  const isMatch = await verifyPassword(String(data.password), institute.password);
   if (!isMatch) {
     throw new UnauthorizedError("Invalid credentials");
+  }
+
+  // If the password was not bcrypt (e.g. Argon2 or plaintext), re-hash with bcrypt
+  // so future logins work on all runtimes (Node.js / Vercel)
+  if (!institute.password.startsWith("$2")) {
+    const bcryptHash = await bcrypt.hash(String(data.password), 10);
+    await Institute.updateOne({ _id: institute._id }, { $set: { password: bcryptHash } });
   }
 
   const token = await jwt_institution.sign({
