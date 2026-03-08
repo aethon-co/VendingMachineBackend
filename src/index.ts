@@ -19,5 +19,10 @@ app.use(adminRoutes);
 app.use(vendingMachineRoutes);
 app.use(uploadRoutes);
 
-app.listen(process.env.PORT || 3000);
-console.log("Server is up and running");
+// Listen locally if true, otherwise let Vercel handle the exported web standard fetch API
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+    app.listen(process.env.PORT || 3000);
+    console.log("Server is up and running");
+}
+
+export default app;
