@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { errorPlugin } from "../errors/handler.js";
-import { checkQRPayment, closePaymentQR, createPaymentQR, getMachineStatus, heartbeat, initMachine, purchase } from "../controllers/vendingMachine.js";
+import { checkQRPayment, closePaymentQR, createPaymentQR, getMachineStatus, heartbeat, initMachine, purchase, createPaymentQRV2, checkTransactionStatus } from "../controllers/vendingMachine.js";
+import { handleRazorpayWebhook } from "../controllers/webhook.js";
 
 export const vendingMachineRoutes = new Elysia({ prefix: "/vending" })
     .use(errorPlugin)
@@ -30,4 +31,16 @@ export const vendingMachineRoutes = new Elysia({ prefix: "/vending" })
     })
     .get("/status/:id", async ({ params }) => {
         return await getMachineStatus(params.id);
+    })
+    // V2 Webhook Flow
+    .post("/payment/create-qr-v2", async ({ body }) => {
+        const { machine_id, secret_token, amount, items } = body as { machine_id: string; secret_token: string; amount: number; items: any[] };
+        return await createPaymentQRV2(machine_id, secret_token, amount, items);
+    })
+    .post("/payment/check-transaction", async ({ body }) => {
+        const { machine_id, secret_token, qr_id } = body as { machine_id: string; secret_token: string; qr_id: string };
+        return await checkTransactionStatus(machine_id, secret_token, qr_id);
+    })
+    .post("/webhook/razorpay", async ({ request, body }) => {
+        return await handleRazorpayWebhook({ request, body });
     });
