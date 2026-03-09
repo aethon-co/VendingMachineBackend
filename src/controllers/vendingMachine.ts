@@ -137,6 +137,7 @@ export const createPaymentQR = async (machineId: string, secretToken: string, am
         throw new BadRequestError("Razorpay QR response missing both image_url and short_url");
     }
 
+    console.log(`[Payment] QR created for machine ${machine.name} (Amount: ${amountInRupees}): ${data.id}`);
     return { qrId: data.id, imageUrl, shortUrl, amount: amountInRupees };
 };
 
@@ -184,6 +185,7 @@ export const createPaymentQRV2 = async (machineId: string, secretToken: string, 
         amount: amountInRupees,
         status: "pending"
     });
+    console.log(`[Payment-V2] QR created and transaction record saved (QR: ${data.id}, Machine: ${machine.name}, Amount: ${amountInRupees})`);
 
     return { qrId: data.id, imageUrl, shortUrl, amount: amountInRupees };
 };
@@ -196,6 +198,7 @@ export const checkTransactionStatus = async (machineId: string, secretToken: str
         throw new NotFoundError("Transaction not found");
     }
 
+    console.log(`[Status] Transaction check for QR ${qrId} on machine ${machineId}: ${transaction.status}`);
     return {
         paid: transaction.status === "paid",
         status: transaction.status,
@@ -221,6 +224,7 @@ export const checkQRPayment = async (machineId: string, secretToken: string, qrI
     }
 
     const successfulPayment = payments.find((p: any) => p.status === "captured" || p.status === "authorized");
+    console.log(`[PaymentCheck] QR ${qrId} result: ${successfulPayment ? 'PAID (' + successfulPayment.id + ')' : 'NOT PAID'}`);
     return { paid: !!successfulPayment, paymentId: successfulPayment?.id };
 };
 

@@ -41,6 +41,8 @@ export const vendingMachineRoutes = new Elysia({ prefix: "/vending" })
         const { machine_id, secret_token, qr_id } = body as { machine_id: string; secret_token: string; qr_id: string };
         return await checkTransactionStatus(machine_id, secret_token, qr_id);
     })
-    .post("/webhook/razorpay", async ({ request, body }) => {
-        return await handleRazorpayWebhook({ request, body });
+    .post("/webhook/razorpay", async ({ request }) => {
+        const rawBody = await request.text();
+        console.log(`[Webhook-Route] Triggered at ${new Date().toISOString()}`);
+        return await handleRazorpayWebhook({ request, rawBody });
     });
